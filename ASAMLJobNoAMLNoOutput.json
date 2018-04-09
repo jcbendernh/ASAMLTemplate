@@ -80,7 +80,8 @@
                           "properties": {
                             "storageAccounts": [
                               {
-                                "accountName": "cfs365rm"
+                                "accountName": "cfs365rm",
+                                "accountKey": "y8ig7KwhuwWbCvjgEW2t7SlAOVO/wFplQnBGw1eEPoxFArKcws67dw234T2BRXIG+flDq3Xj3f0odZ3x4KoNsA=="
                               }
                             ],
                             "container": "testoutput",
