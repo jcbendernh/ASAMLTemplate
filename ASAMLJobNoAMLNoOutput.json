@@ -76,54 +76,36 @@
                     {
                       "properties": {
                         "datasource": {
-                          "type": "Microsoft.ServiceBus/Queue",
+                          "type": "Microsoft.Storage/Blob",
                           "properties": {
-                            "serviceBusNamespace": "cfs365rm151785007e444e70a4555580acce557d",
-                            "sharedAccessPolicyName": "RootManageSharedAccessKey",
-                            "sharedAccessPolicyKey": "5egt8/05nLXiE1NLbDRReDtEhOxtWYPn366da2uIwdY=",
-                            "queueName": "cfs365rm-text"
+                            "storageAccounts": [
+                              {
+                                "accountName": "cfs365rm"
+                              }
+                            ],
+                            "container": "testoutput",
+                            "pathPattern": "",
+                            "dateFormat": "yyyy/MM/dd",
+                            "timeFormat": "HH"
                           }
                         },
                         "serialization": {
-                          "type": "Json",
+                          "type": "Csv",
                           "properties": {
-                            "encoding": "UTF8",
-                            "format": "Array"
+                            "fieldDelimiter": ",",
+                            "encoding": "UTF8"
                           }
                         },
                       },
-                      "name": "AlertsQueue",
+                      "name": "testoutput",
                       "type": "Microsoft.StreamAnalytics/streamingjobs/outputs"
                     }
                   ],
-                "transformation": {
+                  "transformation": {
                     "name": "Transformation",
                     "properties": {
                         "streamingUnits": "[parameters('numberOfStreamingUnits')]",
-                        "query": "WITH AlertData AS (  \r\n-- Web Simulator Devices\r\n  SELECT \r\n
-                        Stream.EventToken as ID,\r\n    Stream.DeviceID,\r\n    Stream.Temperature AS
-                        reading,\r\n    Stream.EventEnqueuedUtcTime AS [time]\r\n    \r\n from IoTStream
-                        Stream\r\n\r\n WHERE\r\n    (Stream.EventToken IS NOT NULL) and (Stream.Temperature IS
-                        NOT NULL)\r\n\r\nUNION\r\n\r\n-- JB's MX Chip with IoT Central Firmware
-                        Update\r\nSELECT\r\n     GetMetadataPropertyValue(Stream, 'EventId') AS ID,\r\n\t
-                        IoTHub.ConnectionDeviceId as DeviceID,\r\n     ((Stream.temp*1.8)+32) as reading,\r\n
-                        Stream.EventEnqueuedUtcTime AS [time]\r\n     \r\nFROM IoTStream
-                        Stream\r\n\r\nWHERE\r\n\t (Stream.temp IS NOT NULL)\r\n\r\nUNION\r\n\r\n-- MX
-                        Chip\r\nSELECT\r\n    Stream.messageId AS ID,\r\n    Stream.DeviceID,\r\n
-                        Stream.Temperature AS reading,\r\n    Stream.EventEnqueuedUtcTime AS [time]\r\n\r\nFROM
-                        IoTStream Stream\r\n\r\nWHERE\r\n     (Stream.messageId IS NOT NULL) and
-                        (Stream.Temperature IS NOT NULL)\r\n\r\nUNION\r\n\r\n-- Particle Device\r\nSELECT\r\n
-                        Stream.published_at as ID,\r\n\t Stream.device_id AS DeviceID,\r\n\t CAST(Stream.data as
-                        float) AS reading,\r\n\t Stream.EventEnqueuedUtcTime AS [time]\r\n\r\nFROM IoTStream
-                        Stream\r\nWHERE\r\n     CAST(Stream.data as float) > 0 and
-                        Stream.Event='temperature'\r\n),\r\n\r\nAmlStep AS (  \r\n  SELECT \r\n\tID,
-                        \r\n\tDeviceID,\r\n\treading, \r\n\ttime, \r\n\taml(ID, DeviceID, reading, time) as
-                        result\r\n  from AlertData\r\n\r\n)\r\n\r\nSELECT \r\n    result.ID,\r\n
-                        result.DeviceID,\r\n    'Temperature' AS ReadingType,\r\n
-                        result.reading,\r\n\tCAST(result.time AS datetime) as time,\r\n
-                        result.[abn]\r\n\r\n--INTO testoutput\r\nINTO AlertsQueue\r\nFROM AmlStep \r\nWHERE
-                        CAST(result.[abn] AS bigint)=1\r\nAND (LAG(result.DeviceID) OVER (PARTITION BY
-                        result.DeviceID, result.reading LIMIT DURATION(minute, 1)) IS NULL)"
+                        "query": "SELECT\r\n    *\r\nINTO\r\n    [YourOutputAlias]\r\nFROM\r\n    [YourInputAlias]"
                     }
                 }
             }
