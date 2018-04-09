@@ -208,6 +208,7 @@
                 "transformation": {
                     "name": "Transformation",
                     "properties": {
+                        "streamingUnits": "[parameters('numberOfStreamingUnits')]",
                         "query": "WITH AlertData AS (  \r\n-- Web Simulator Devices\r\n  SELECT \r\n
                         Stream.EventToken as ID,\r\n    Stream.DeviceID,\r\n    Stream.Temperature AS
                         reading,\r\n    Stream.EventEnqueuedUtcTime AS [time]\r\n    \r\n from IoTStream
@@ -231,8 +232,7 @@
                         result.reading,\r\n\tCAST(result.time AS datetime) as time,\r\n
                         result.[abn]\r\n\r\n--INTO testoutput\r\nINTO AlertsQueue\r\nFROM AmlStep \r\nWHERE
                         CAST(result.[abn] AS bigint)=1\r\nAND (LAG(result.DeviceID) OVER (PARTITION BY
-                        result.DeviceID, result.reading LIMIT DURATION(minute, 1)) IS NULL)",
-                        "streamingUnits": "[parameters('numberOfStreamingUnits')]"
+                        result.DeviceID, result.reading LIMIT DURATION(minute, 1)) IS NULL)"
                     }
                 }
             }
