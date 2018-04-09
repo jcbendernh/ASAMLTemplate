@@ -56,7 +56,7 @@
                             "properties": {
                               "iotHubNamespace": "cfs365rmd5356",
                               "sharedAccessPolicyName": "iothubowner",
-                              "sharedAccessPolicyKey" : "yBc7eRGMhLbOAXCvtE6/rI1bFKXOAhrGYcwisNu16ms=",
+                              "sharedAccessPolicyKey": "yBc7eRGMhLbOAXCvtE6/rI1bFKXOAhrGYcwisNu16ms=",
                               "consumerGroupName": "anomalycg",
                               "endpoint": "messages/events"
                             }
