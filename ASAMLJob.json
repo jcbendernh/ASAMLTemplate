@@ -6,6 +6,27 @@
             "type": "String"
         },
     },
+    "numberOfStreamingUnits": {
+      "type": "int",
+      "minValue": 1,
+      "maxValue": 48,
+      "allowedValues": [
+        1,
+        3,
+        6,
+        12,
+        18,
+        24,
+        30,
+        36,
+        42,
+        48
+      ],
+      "metadata": {
+        "description": "Number of Streaming Units"
+      }
+    }
+  },
     "resources": [
         {
             "type": "Microsoft.StreamAnalytics/StreamingJobs",
@@ -207,7 +228,7 @@
                         result.[abn]\r\n\r\n--INTO testoutput\r\nINTO AlertsQueue\r\nFROM AmlStep \r\nWHERE
                         CAST(result.[abn] AS bigint)=1\r\nAND (LAG(result.DeviceID) OVER (PARTITION BY
                         result.DeviceID, result.reading LIMIT DURATION(minute, 1)) IS NULL)",
-                        "streamingUnits": 1
+                        "streamingUnits": "[parameters('numberOfStreamingUnits')]"
                     }
                 }
             }
