@@ -72,36 +72,6 @@
                         "type": "Microsoft.StreamAnalytics/streamingjobs/inputs"
                       }
                 ],
-                "outputs": [
-                    {
-                      "properties": {
-                        "datasource": {
-                          "type": "Microsoft.Storage/Blob",
-                          "properties": {
-                            "storageAccounts": [
-                              {
-                                "accountName": "cfs365rm",
-                                "accountKey": "y8ig7KwhuwWbCvjgEW2t7SlAOVO/wFplQnBGw1eEPoxFArKcws67dw234T2BRXIG+flDq3Xj3f0odZ3x4KoNsA=="
-                              }
-                            ],
-                            "container": "testoutput",
-                            "pathPattern": "",
-                            "dateFormat": "yyyy/MM/dd",
-                            "timeFormat": "HH"
-                          }
-                        },
-                        "serialization": {
-                          "type": "Csv",
-                          "properties": {
-                            "fieldDelimiter": ",",
-                            "encoding": "UTF8"
-                          }
-                        },
-                      },
-                      "name": "testoutput",
-                      "type": "Microsoft.StreamAnalytics/streamingjobs/outputs"
-                    }
-                  ],
                   "transformation": {
                     "name": "Transformation",
                     "properties": {
