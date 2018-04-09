@@ -1,0 +1,107 @@
+{
+    "$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json",
+    "contentVersion": "1.2.2.0",
+    "parameters": {
+        "streamAnalyticsJobName": {
+            "minLength": 3,
+            "maxLength": 63,
+            "type": "String",
+            "metadata": {
+                "description": "Stream Analytics Job Name, can contain alphanumeric characters and hypen and must be 3-63 characters long"
+            }
+        },
+        "numberOfStreamingUnits": {
+            "allowedValues": [
+                1,
+                3,
+                6,
+                12,
+                18,
+                24,
+                30,
+                36,
+                42,
+                48
+            ],
+            "minValue": 1,
+            "maxValue": 48,
+            "type": "Int",
+            "metadata": {
+                "description": "Number of Streaming Units"
+            }
+        }
+    },
+    "resources": [
+        {
+            "type": "Microsoft.StreamAnalytics/StreamingJobs",
+            "name": "[parameters('streamAnalyticsJobName')]",
+            "apiVersion": "2016-03-01",
+            "location": "[resourceGroup().location]",
+            "properties": {
+                "sku": {
+                    "name": "standard"
+                },
+                "outputErrorPolicy": "stop",
+                "eventsOutOfOrderPolicy": "adjust",
+                "eventsOutOfOrderMaxDelayInSeconds": 0,
+                "eventsLateArrivalMaxDelayInSeconds": 5,
+                "dataLocale": "en-US",
+                "jobType": "Cloud",
+                "inputs": [
+                    {
+                        "properties": {
+                          "type": "Stream",
+                          "datasource": {
+                            "type": "Microsoft.Devices/IotHubs",
+                            "properties": {
+                              "iotHubNamespace": "cfs365rmd5356",
+                              "sharedAccessPolicyName": "iothubowner",
+                              "consumerGroupName": "anomalycg",
+                              "endpoint": "messages/events"
+                            }
+                          },
+                          "serialization": {
+                            "type": "Json",
+                            "properties": {
+                              "encoding": "UTF8"
+                            }
+                          },
+                        },
+                        "name": "IoTStream",
+                        "type": "Microsoft.StreamAnalytics/streamingjobs/inputs"
+                      }
+                ],
+                "transformation": {
+                    "name": "Transformation",
+                    "properties": {
+                        "streamingUnits": "[parameters('numberOfStreamingUnits')]",
+                        "query": "WITH AlertData AS (  \r\n-- Web Simulator Devices\r\n  SELECT \r\n
+                        Stream.EventToken as ID,\r\n    Stream.DeviceID,\r\n    Stream.Temperature AS
+                        reading,\r\n    Stream.EventEnqueuedUtcTime AS [time]\r\n    \r\n from IoTStream
+                        Stream\r\n\r\n WHERE\r\n    (Stream.EventToken IS NOT NULL) and (Stream.Temperature IS
+                        NOT NULL)\r\n\r\nUNION\r\n\r\n-- JB's MX Chip with IoT Central Firmware
+                        Update\r\nSELECT\r\n     GetMetadataPropertyValue(Stream, 'EventId') AS ID,\r\n\t
+                        IoTHub.ConnectionDeviceId as DeviceID,\r\n     ((Stream.temp*1.8)+32) as reading,\r\n
+                        Stream.EventEnqueuedUtcTime AS [time]\r\n     \r\nFROM IoTStream
+                        Stream\r\n\r\nWHERE\r\n\t (Stream.temp IS NOT NULL)\r\n\r\nUNION\r\n\r\n-- MX
+                        Chip\r\nSELECT\r\n    Stream.messageId AS ID,\r\n    Stream.DeviceID,\r\n
+                        Stream.Temperature AS reading,\r\n    Stream.EventEnqueuedUtcTime AS [time]\r\n\r\nFROM
+                        IoTStream Stream\r\n\r\nWHERE\r\n     (Stream.messageId IS NOT NULL) and
+                        (Stream.Temperature IS NOT NULL)\r\n\r\nUNION\r\n\r\n-- Particle Device\r\nSELECT\r\n
+                        Stream.published_at as ID,\r\n\t Stream.device_id AS DeviceID,\r\n\t CAST(Stream.data as
+                        float) AS reading,\r\n\t Stream.EventEnqueuedUtcTime AS [time]\r\n\r\nFROM IoTStream
+                        Stream\r\nWHERE\r\n     CAST(Stream.data as float) > 0 and
+                        Stream.Event='temperature'\r\n),\r\n\r\nAmlStep AS (  \r\n  SELECT \r\n\tID,
+                        \r\n\tDeviceID,\r\n\treading, \r\n\ttime, \r\n\taml(ID, DeviceID, reading, time) as
+                        result\r\n  from AlertData\r\n\r\n)\r\n\r\nSELECT \r\n    result.ID,\r\n
+                        result.DeviceID,\r\n    'Temperature' AS ReadingType,\r\n
+                        result.reading,\r\n\tCAST(result.time AS datetime) as time,\r\n
+                        result.[abn]\r\n\r\n--INTO testoutput\r\nINTO AlertsQueue\r\nFROM AmlStep \r\nWHERE
+                        CAST(result.[abn] AS bigint)=1\r\nAND (LAG(result.DeviceID) OVER (PARTITION BY
+                        result.DeviceID, result.reading LIMIT DURATION(minute, 1)) IS NULL)"
+                    }
+                }
+            }
+        }
+    ]
+}
