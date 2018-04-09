@@ -72,30 +72,6 @@
                         "type": "Microsoft.StreamAnalytics/streamingjobs/inputs"
                       }
                 ],
-                "outputs": [
-                    {
-                      "properties": {
-                        "datasource": {
-                          "type": "Microsoft.ServiceBus/Queue",
-                          "properties": {
-                            "serviceBusNamespace": "cfs365rm151785007e444e70a4555580acce557d",
-                            "sharedAccessPolicyName": "RootManageSharedAccessKey",
-                            "sharedAccessPolicyKey": "5egt8/05nLXiE1NLbDRReDtEhOxtWYPn366da2uIwdY=",
-                            "queueName": "cfs365rm-text"
-                          }
-                        },
-                        "serialization": {
-                          "type": "Json",
-                          "properties": {
-                            "encoding": "UTF8",
-                            "format": "Array"
-                          }
-                        },
-                      },
-                      "name": "AlertsQueue",
-                      "type": "Microsoft.StreamAnalytics/streamingjobs/outputs"
-                    }
-                  ],
                 "transformation": {
                     "name": "Transformation",
                     "properties": {
