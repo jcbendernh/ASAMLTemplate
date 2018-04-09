@@ -94,33 +94,6 @@
                       },
                       "name": "AlertsQueue",
                       "type": "Microsoft.StreamAnalytics/streamingjobs/outputs"
-                    },
-                    {
-                      "properties": {
-                        "datasource": {
-                          "type": "Microsoft.Storage/Blob",
-                          "properties": {
-                            "storageAccounts": [
-                              {
-                                "accountName": "cfs365rm"
-                              }
-                            ],
-                            "container": "testoutput",
-                            "pathPattern": "",
-                            "dateFormat": "yyyy/MM/dd",
-                            "timeFormat": "HH"
-                          }
-                        },
-                        "serialization": {
-                          "type": "Csv",
-                          "properties": {
-                            "fieldDelimiter": ",",
-                            "encoding": "UTF8"
-                          }
-                        },
-                      },
-                      "name": "testoutput",
-                      "type": "Microsoft.StreamAnalytics/streamingjobs/outputs"
                     }
                   ],
                 "transformation": {
