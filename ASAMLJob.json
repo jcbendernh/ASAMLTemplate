@@ -207,7 +207,7 @@
                         result.[abn]\r\n\r\n--INTO testoutput\r\nINTO AlertsQueue\r\nFROM AmlStep \r\nWHERE
                         CAST(result.[abn] AS bigint)=1\r\nAND (LAG(result.DeviceID) OVER (PARTITION BY
                         result.DeviceID, result.reading LIMIT DURATION(minute, 1)) IS NULL)",
-                        "streamingUnits": "1"
+                        "streamingUnits": 1
                     }
                 }
             }
