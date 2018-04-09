@@ -80,7 +80,7 @@
                           "properties": {
                             "serviceBusNamespace": "cfs365rm151785007e444e70a4555580acce557d",
                             "sharedAccessPolicyName": "RootManageSharedAccessKey",
-                            "sharedAccessPolicyKey": "5egt8/05nLXiE1NLbDRReDtEhOxtWYPn366da2uIwdY=",
+                            "accountKey": "5egt8/05nLXiE1NLbDRReDtEhOxtWYPn366da2uIwdY=",
                             "queueName": "cfs365rm-text"
                           }
                         },
